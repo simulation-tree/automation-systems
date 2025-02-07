@@ -14,45 +14,53 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentQuery<IsStateful> query = new(world);
-            foreach (var r in query)
+            ComponentType statefulComponentType = world.Schema.GetComponent<IsStateful>();
+            foreach (Chunk chunk in world.Chunks)
             {
-                ref IsStateful stateful = ref r.component1;
-                uint statefulEntity = r.entity;
-                if (stateful.stateMachineReference == default)
+                if (chunk.Definition.Contains(statefulComponentType))
                 {
-                    throw new InvalidOperationException($"Stateful entity `{statefulEntity}` does not have a state machine reference");
-                }
-
-                USpan<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
-                uint stateMachineEntity = world.GetReference(statefulEntity, stateful.stateMachineReference);
-                USpan<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
-                if (stateful.state == default)
-                {
-                    stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity).entryState;
-                    if (stateful.state == default)
+                    USpan<uint> entities = chunk.Entities;
+                    USpan<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    for (uint i = 0; i < entities.Length; i++)
                     {
-                        throw new InvalidOperationException($"State machine `{stateMachineEntity}` does not have an entry state assigned");
-                    }
-                }
-
-                AvailableState currentState = availableStates[stateful.state - 1];
-                int currentStateHash = currentState.name.GetHashCode();
-                USpan<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
-                foreach (Transition transition in transitions)
-                {
-                    if (transition.sourceStateHash == currentStateHash)
-                    {
-                        if (IsConditionMet(transition, parameters))
+                        ref IsStateful stateful = ref components[i];
+                        uint statefulEntity = entities[i];
+                        if (stateful.stateMachineReference == default)
                         {
-                            if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates, out uint newStateIndex))
+                            throw new InvalidOperationException($"Stateful entity `{statefulEntity}` does not have a state machine reference");
+                        }
+
+                        USpan<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
+                        uint stateMachineEntity = world.GetReference(statefulEntity, stateful.stateMachineReference);
+                        USpan<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
+                        if (stateful.state == default)
+                        {
+                            stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity).entryState;
+                            if (stateful.state == default)
                             {
-                                stateful.state = newStateIndex + 1;
-                                break;
+                                throw new InvalidOperationException($"State machine `{stateMachineEntity}` does not have an entry state assigned");
                             }
-                            else
+                        }
+
+                        AvailableState currentState = availableStates[stateful.state - 1];
+                        int currentStateHash = currentState.name.GetHashCode();
+                        USpan<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
+                        foreach (Transition transition in transitions)
+                        {
+                            if (transition.sourceStateHash == currentStateHash)
                             {
-                                throw new InvalidOperationException($"State with name hash `{transition.destinationStateHash}` on state machine `{stateMachineEntity}` couldn't be found");
+                                if (IsConditionMet(transition, parameters))
+                                {
+                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates, out uint newStateIndex))
+                                    {
+                                        stateful.state = newStateIndex + 1;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidOperationException($"State with name hash `{transition.destinationStateHash}` on state machine `{stateMachineEntity}` couldn't be found");
+                                    }
+                                }
                             }
                         }
                     }

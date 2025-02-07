@@ -14,52 +14,64 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentQuery<IsStateful, IsAutomationPlayer> query = new(world);
-            foreach (var r in query)
+            ComponentType statefulComponentType = world.Schema.GetComponent<IsStateful>();
+            ComponentType automationComponentType = world.Schema.GetComponent<IsAutomationPlayer>();
+            foreach (Chunk chunk in world.Chunks)
             {
-                ref IsStateful statefulComponent = ref r.component1;
-                ref IsAutomationPlayer player = ref r.component2;
-                uint statefulEntity = r.entity;
-                if (statefulComponent.state == default)
+                Definition definition = chunk.Definition;
+                if (definition.Contains(statefulComponentType) && definition.Contains(automationComponentType))
                 {
-                    //state not yet assigned
-                    return;
-                }
-
-                rint stateMachineReference = statefulComponent.stateMachineReference;
-                uint stateMachineEntity = world.GetReference(statefulEntity, stateMachineReference);
-                USpan<AvailableState> states = world.GetArray<AvailableState>(stateMachineEntity);
-                AvailableState state = states[statefulComponent.state - 1];
-                int stateNameHash = state.name.GetHashCode();
-                USpan<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
-                foreach (StateAutomationLink link in links)
-                {
-                    if (link.stateNameHash == stateNameHash)
+                    USpan<uint> entities = chunk.Entities;
+                    USpan<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    USpan<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
+                    for (uint i = 0; i < entities.Length; i++)
                     {
-                        ref rint automationReference = ref player.automationReference;
-                        uint desiredAutomationEntity = world.GetReference(statefulEntity, link.automationReference);
-                        if (automationReference == default)
+                        ref IsStateful statefulComponent = ref statefulComponents[i];
+                        ref IsAutomationPlayer automationComponent = ref automationComponents[i];
+                        if (statefulComponent.state == default)
                         {
-                            player.time = default;
-                            player.componentType = link.componentType;
-                            automationReference = world.AddReference(statefulEntity, desiredAutomationEntity);
-                        }
-                        else
-                        {
-                            uint currentAutomationEntity = world.GetReference(statefulEntity, automationReference);
-                            if (currentAutomationEntity != desiredAutomationEntity)
-                            {
-                                player.time = default;
-                                player.componentType = link.componentType;
-                                world.SetReference(statefulEntity, automationReference, desiredAutomationEntity);
-                            }
-                            else
-                            {
-                                //automation already set
-                            }
+                            //state not yet assigned
+                            return;
                         }
 
-                        break;
+                        uint statefulEntity = entities[i];
+                        rint stateMachineReference = statefulComponent.stateMachineReference;
+                        uint stateMachineEntity = world.GetReference(statefulEntity, stateMachineReference);
+                        USpan<AvailableState> states = world.GetArray<AvailableState>(stateMachineEntity);
+                        AvailableState state = states[statefulComponent.state - 1];
+                        int stateNameHash = state.name.GetHashCode();
+                        USpan<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
+                        for (uint l = 0; l < links.Length; l++)
+                        {
+                            StateAutomationLink link = links[i];
+                            if (link.stateNameHash == stateNameHash)
+                            {
+                                ref rint automationReference = ref automationComponent.automationReference;
+                                uint desiredAutomationEntity = world.GetReference(statefulEntity, link.automationReference);
+                                if (automationReference == default)
+                                {
+                                    automationComponent.time = default;
+                                    automationComponent.componentType = link.componentType;
+                                    automationReference = world.AddReference(statefulEntity, desiredAutomationEntity);
+                                }
+                                else
+                                {
+                                    uint currentAutomationEntity = world.GetReference(statefulEntity, automationReference);
+                                    if (currentAutomationEntity != desiredAutomationEntity)
+                                    {
+                                        automationComponent.time = default;
+                                        automationComponent.componentType = link.componentType;
+                                        world.SetReference(statefulEntity, automationReference, desiredAutomationEntity);
+                                    }
+                                    else
+                                    {
+                                        //automation already set
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
                     }
                 }
             }

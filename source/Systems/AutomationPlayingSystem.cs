@@ -32,18 +32,24 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentQuery<IsAutomationPlayer> query = new(world);
-            foreach (var r in query)
+            ComponentType componentType = world.Schema.GetComponent<IsAutomationPlayer>();
+            foreach (Chunk chunk in world.Chunks)
             {
-                uint entity = r.entity;
-                ref IsAutomationPlayer player = ref r.component1;
-                if (player.automationReference != default)
+                if (chunk.Definition.Contains(componentType))
                 {
-                    player.time += delta;
-                    uint automationEntity = world.GetReference(entity, player.automationReference);
-                    ComponentType componentType = player.componentType;
-                    ushort componentSize = player.componentType.Size;
-                    Evaluate(world, entity, componentType, componentSize, automationEntity, player.time);
+                    USpan<uint> entities = chunk.Entities;
+                    USpan<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
+                    for (uint i = 0; i < entities.Length; i++)
+                    {
+                        ref IsAutomationPlayer player = ref components[i];
+                        if (player.automationReference != default)
+                        {
+                            uint entity = entities[i];
+                            player.time += delta;
+                            uint automationEntity = world.GetReference(entity, player.automationReference);
+                            Evaluate(world, entity, player.componentType, automationEntity, player.time);
+                        }
+                    }
                 }
             }
         }
@@ -62,8 +68,9 @@ namespace Automations.Systems
             return new((byte)interpolationFunctions.Count);
         }
 
-        private readonly unsafe void Evaluate(World world, uint playerEntity, ComponentType componentType, ushort componentSize, uint automationEntity, TimeSpan time)
+        private readonly unsafe void Evaluate(World world, uint playerEntity, DataType componentType, uint automationEntity, TimeSpan time)
         {
+            ushort componentSize = componentType.Size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
             Allocation keyframeValues = world.GetArray(automationEntity, keyframeType, out uint keyframeCount);
