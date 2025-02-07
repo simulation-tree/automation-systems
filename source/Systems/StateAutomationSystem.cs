@@ -43,7 +43,7 @@ namespace Automations.Systems
                         USpan<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
                         for (uint l = 0; l < links.Length; l++)
                         {
-                            StateAutomationLink link = links[i];
+                            StateAutomationLink link = links[l];
                             if (link.stateNameHash == stateNameHash)
                             {
                                 ref rint automationReference = ref automationComponent.automationReference;
