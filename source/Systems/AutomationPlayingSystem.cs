@@ -70,7 +70,7 @@ namespace Automations.Systems
 
         private readonly unsafe void Evaluate(World world, uint playerEntity, DataType componentType, uint automationEntity, TimeSpan time)
         {
-            ushort componentSize = componentType.Size;
+            ushort componentSize = componentType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
             Allocation keyframeValues = world.GetArray(automationEntity, keyframeType, out uint keyframeCount);
@@ -80,7 +80,7 @@ namespace Automations.Systems
                 return;
             }
 
-            ushort keyframeSize = keyframeType.Size;
+            ushort keyframeSize = keyframeType.size;
             float timeInSeconds = (float)time.TotalSeconds;
             float finalKeyframeTime = keyframeTimes[keyframeCount - 1];
             if (timeInSeconds >= finalKeyframeTime)
