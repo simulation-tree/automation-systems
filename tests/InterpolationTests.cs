@@ -20,7 +20,7 @@ namespace Automations.Systems.Tests
             animation.AddKeyframe(3f, "text");
 
             AutomationPlayer entityPlayer = entity.Become<AutomationPlayer>();
-            entityPlayer.SetAutomation<FixedString>(animation);
+            entityPlayer.SetAutomationForComponent<FixedString>(animation);
             entityPlayer.Play();
 
             Assert.That(animation.Count, Is.EqualTo(4));
@@ -106,8 +106,8 @@ namespace Automations.Systems.Tests
             keyframes.Write(sizeof(float) * 0, 0f);
             keyframes.Write(sizeof(float) * 1, 8f);
 
-            void* current = keyframes.Read(sizeof(float) * 0);
-            void* next = keyframes.Read(sizeof(float) * 1);
+            Allocation current = keyframes.Read(sizeof(float) * 0);
+            Allocation next = keyframes.Read(sizeof(float) * 1);
             Interpolation floatInterpolation = BuiltInInterpolations.all[InterpolationMethod.FloatLinear];
             floatInterpolation.Invoke(current, next, 0.5f, component, sizeof(float));
 

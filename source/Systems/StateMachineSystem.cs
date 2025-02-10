@@ -77,38 +77,17 @@ namespace Automations.Systems
             float value = transition.value;
             Transition.Condition condition = transition.condition;
             float parameterValue = GetParameterValue(transition.parameterHash, parameters);
-            if (condition == Transition.Condition.Equal)
+            return condition switch
             {
-                return parameterValue == value;
-            }
-            else if (condition == Transition.Condition.NotEqual)
-            {
-                return parameterValue != value;
-            }
-            else if (condition == Transition.Condition.GreaterThan)
-            {
-                return parameterValue > value;
-            }
-            else if (condition == Transition.Condition.GreaterThanOrEqual)
-            {
-                return parameterValue >= value;
-            }
-            else if (condition == Transition.Condition.LessThan)
-            {
-                return parameterValue < value;
-            }
-            else if (condition == Transition.Condition.LessThanOrEqual)
-            {
-                return parameterValue <= value;
-            }
-            else if (condition == Transition.Condition.None)
-            {
-                return false;
-            }
-            else
-            {
-                throw new NotSupportedException($"Unsupported condition `{condition}`");
-            }
+                Transition.Condition.Equal => parameterValue == value,
+                Transition.Condition.NotEqual => parameterValue != value,
+                Transition.Condition.GreaterThan => parameterValue > value,
+                Transition.Condition.GreaterThanOrEqual => parameterValue >= value,
+                Transition.Condition.LessThan => parameterValue < value,
+                Transition.Condition.LessThanOrEqual => parameterValue <= value,
+                Transition.Condition.None => false,
+                _ => throw new NotSupportedException($"Unsupported condition `{condition}`")
+            };
         }
 
         private static float GetParameterValue(int nameHash, USpan<Parameter> parameters)

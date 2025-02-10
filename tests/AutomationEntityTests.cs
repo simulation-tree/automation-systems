@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Unmanaged;
 using Worlds;
 
 namespace Automations.Systems.Tests
@@ -47,7 +48,7 @@ namespace Automations.Systems.Tests
             thingToMove.AddComponent<Position>();
 
             AutomationPlayer thingPlayer = thingToMove.Become<AutomationPlayer>();
-            thingPlayer.SetAutomation<Position>(testAutomation);
+            thingPlayer.SetAutomationForComponent<Position>(testAutomation);
             thingPlayer.Play();
 
             TimeSpan delta = TimeSpan.FromSeconds(0.1f);
@@ -57,7 +58,6 @@ namespace Automations.Systems.Tests
                 simulator.Update(delta);
                 time += delta;
                 Vector3 currentPosition = thingToMove.GetComponent<Position>().value;
-                Console.WriteLine(currentPosition);
                 if (time == TimeSpan.FromSeconds(0.5f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
@@ -109,6 +109,94 @@ namespace Automations.Systems.Tests
             }
 
             Vector3 finalPosition = thingToMove.GetComponent<Position>().value;
+            Assert.That(finalPosition.X, Is.EqualTo(1f).Within(0.01f));
+            Assert.That(finalPosition.Y, Is.EqualTo(1f).Within(0.01f));
+            Assert.That(finalPosition.Z, Is.EqualTo(1f).Within(0.01f));
+        }
+
+        [Test]
+        public void AnimateArrayElement()
+        {
+            Automation<Vector3> testAutomation = new(world, InterpolationMethod.Vector3Linear,
+            [
+                (0, Vector3.Zero),
+                (1f, Vector3.UnitX),
+                (2f, Vector3.UnitY),
+                (3f, Vector3.UnitZ),
+                (4f, Vector3.One),
+            ]);
+
+            Entity thingToAnimate = new(world);
+            USpan<Position> array = thingToAnimate.CreateArray<Position>(4);
+            array[0] = new(5, 0, 0);
+            array[1] = new(0, 5, 0);
+            array[2] = new(0, 0, 5);
+            array[3] = new(5, 5, 5);
+
+            uint arrayIndex = 1;
+            AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
+            thingPlayer.SetAutomationForArrayElement<Position>(testAutomation, arrayIndex);
+            thingPlayer.Play();
+
+            TimeSpan delta = TimeSpan.FromSeconds(0.1f);
+            TimeSpan time = TimeSpan.Zero;
+            while (time < TimeSpan.FromSeconds(5f))
+            {
+                simulator.Update(delta);
+                time += delta;
+
+                Vector3 currentPosition = array[arrayIndex].value;
+                if (time == TimeSpan.FromSeconds(0.5f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(1f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(1.5f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(2f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(2.5f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(3f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(3.5f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                }
+                else if (time == TimeSpan.FromSeconds(4f))
+                {
+                    Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                }
+            }
+
+            Vector3 finalPosition = array[arrayIndex].value;
             Assert.That(finalPosition.X, Is.EqualTo(1f).Within(0.01f));
             Assert.That(finalPosition.Y, Is.EqualTo(1f).Within(0.01f));
             Assert.That(finalPosition.Z, Is.EqualTo(1f).Within(0.01f));

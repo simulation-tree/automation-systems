@@ -43,6 +43,7 @@ namespace Automations.Systems.Tests
             readonly void ISchemaBank.Load(RegisterDataType function)
             {
                 function.Invoke(TypeRegistry.Get<Position>(), DataType.Kind.Component);
+                function.Invoke(TypeRegistry.Get<Position>(), DataType.Kind.ArrayElement);
             }
         }
     }

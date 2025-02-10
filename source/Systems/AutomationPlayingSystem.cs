@@ -2,6 +2,7 @@
 using Collections;
 using Simulation;
 using System;
+using System.Diagnostics;
 using Unmanaged;
 using Worlds;
 
@@ -47,7 +48,7 @@ namespace Automations.Systems
                             uint entity = entities[i];
                             player.time += delta;
                             uint automationEntity = world.GetReference(entity, player.automationReference);
-                            Evaluate(world, entity, player.componentType, automationEntity, player.time);
+                            Evaluate(world, entity, player, automationEntity);
                         }
                     }
                 }
@@ -68,9 +69,13 @@ namespace Automations.Systems
             return new((byte)interpolationFunctions.Count);
         }
 
-        private readonly unsafe void Evaluate(World world, uint playerEntity, DataType componentType, uint automationEntity, TimeSpan time)
+        private readonly void Evaluate(World world, uint playerEntity, IsAutomationPlayer player, uint automationEntity)
         {
-            ushort componentSize = componentType.size;
+            DataType dataType = player.dataType;
+            TimeSpan time = player.time;
+            ThrowIfDataTypeKindNotSupported(dataType.kind);
+
+            ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
             Allocation keyframeValues = world.GetArray(automationEntity, keyframeType, out uint keyframeCount);
@@ -122,8 +127,8 @@ namespace Automations.Systems
                 }
             }
 
-            void* currentKeyframe = keyframeValues.Read(current * keyframeSize);
-            void* nextKeyframe = keyframeValues.Read(next * keyframeSize);
+            Allocation currentKeyframe = keyframeValues.Read(current * keyframeSize);
+            Allocation nextKeyframe = keyframeValues.Read(next * keyframeSize);
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
@@ -135,17 +140,61 @@ namespace Automations.Systems
 
             if (automationComponent.interpolationMethod == default)
             {
-                void* component = world.GetComponent(playerEntity, componentType);
-                System.Runtime.CompilerServices.Unsafe.CopyBlock(component, currentKeyframe, componentSize);
+                Allocation target;
+                if (dataType.kind == DataType.Kind.ArrayElement)
+                {
+                    uint arrayIndex = player.arrayIndex;
+                    Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
+                    target = array.Read(arrayIndex * dataTypeSize);
+
+                    ThrowIfOutOfArrayRange(arrayIndex, arrayLength);
+                }
+                else
+                {
+                    target = world.GetComponent(playerEntity, dataType);
+                }
+
+                currentKeyframe.CopyTo(target, dataTypeSize);
             }
             else
             {
                 byte index = automationComponent.interpolationMethod.value;
                 index--;
-                void* component = world.GetComponent(playerEntity, componentType);
+
+                Allocation target;
+                if (dataType.kind == DataType.Kind.ArrayElement)
+                {
+                    uint arrayIndex = player.arrayIndex;
+                    Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
+                    target = array.Read(arrayIndex * dataTypeSize);
+
+                    ThrowIfOutOfArrayRange(arrayIndex, arrayLength);
+                }
+                else
+                {
+                    target = world.GetComponent(playerEntity, dataType);
+                }
 
                 Interpolation interpolation = interpolationFunctions[index];
-                interpolation.Invoke(currentKeyframe, nextKeyframe, timeProgress, component, componentSize);
+                interpolation.Invoke(currentKeyframe, nextKeyframe, timeProgress, target, dataTypeSize);
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private static void ThrowIfDataTypeKindNotSupported(DataType.Kind kind)
+        {
+            if (kind != DataType.Kind.Component && kind != DataType.Kind.ArrayElement)
+            {
+                throw new NotSupportedException("Only components and array elements are supported");
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private static void ThrowIfOutOfArrayRange(uint index, uint length)
+        {
+            if (index >= length)
+            {
+                throw new IndexOutOfRangeException("Index is out of range");
             }
         }
     }
