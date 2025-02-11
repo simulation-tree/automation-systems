@@ -71,7 +71,7 @@ namespace Automations.Systems
 
         private readonly void Evaluate(World world, uint playerEntity, IsAutomationPlayer player, uint automationEntity)
         {
-            DataType dataType = player.dataType;
+            DataType dataType = player.target.targetType;
             TimeSpan time = player.time;
             ThrowIfDataTypeKindNotSupported(dataType.kind);
 
@@ -143,15 +143,16 @@ namespace Automations.Systems
                 Allocation target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
-                    uint arrayIndex = player.arrayIndex;
+                    uint bytePosition = player.target.bytePosition;
                     Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
-                    target = array.Read(arrayIndex * dataTypeSize);
+                    target = array.Read(bytePosition);
 
-                    ThrowIfOutOfArrayRange(arrayIndex, arrayLength);
+                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataType.size);
                 }
                 else
                 {
                     target = world.GetComponent(playerEntity, dataType);
+                    target = target.Read(player.target.bytePosition);
                 }
 
                 currentKeyframe.CopyTo(target, dataTypeSize);
@@ -164,15 +165,16 @@ namespace Automations.Systems
                 Allocation target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
-                    uint arrayIndex = player.arrayIndex;
+                    uint bytePosition = player.target.bytePosition;
                     Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
-                    target = array.Read(arrayIndex * dataTypeSize);
+                    target = array.Read(bytePosition);
 
-                    ThrowIfOutOfArrayRange(arrayIndex, arrayLength);
+                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataType.size);
                 }
                 else
                 {
                     target = world.GetComponent(playerEntity, dataType);
+                    target = target.Read(player.target.bytePosition);
                 }
 
                 Interpolation interpolation = interpolationFunctions[index];
@@ -190,9 +192,9 @@ namespace Automations.Systems
         }
 
         [Conditional("DEBUG")]
-        private static void ThrowIfOutOfArrayRange(uint index, uint length)
+        private static void ThrowIfOutOfArrayRange(uint bytePosition, uint byteLength)
         {
-            if (index >= length)
+            if (bytePosition >= byteLength)
             {
                 throw new IndexOutOfRangeException("Index is out of range");
             }

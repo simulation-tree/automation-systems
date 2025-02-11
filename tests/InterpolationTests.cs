@@ -13,7 +13,7 @@ namespace Automations.Systems.Tests
             Entity entity = new(world);
             entity.AddComponent<FixedString>();
 
-            Automation<FixedString> animation = new(world);
+            AutomationEntity<FixedString> animation = new(world);
             animation.AddKeyframe(0f, "this");
             animation.AddKeyframe(1f, "is");
             animation.AddKeyframe(2f, "sum");

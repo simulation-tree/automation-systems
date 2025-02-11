@@ -51,8 +51,7 @@ namespace Automations.Systems
                                 if (automationReference == default)
                                 {
                                     automationComponent.time = default;
-                                    automationComponent.dataType = link.targetType;
-                                    automationComponent.arrayIndex = link.arrayIndex;
+                                    automationComponent.target = link.target;
                                     automationReference = world.AddReference(statefulEntity, desiredAutomationEntity);
                                 }
                                 else
@@ -61,8 +60,7 @@ namespace Automations.Systems
                                     if (currentAutomationEntity != desiredAutomationEntity)
                                     {
                                         automationComponent.time = default;
-                                        automationComponent.dataType = link.targetType;
-                                        automationComponent.arrayIndex = link.arrayIndex;
+                                        automationComponent.target = link.target;
                                         world.SetReference(statefulEntity, automationReference, desiredAutomationEntity);
                                     }
                                     else

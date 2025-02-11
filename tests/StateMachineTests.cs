@@ -54,8 +54,8 @@ namespace Automations.Systems.Tests
         [Test]
         public void StatefulEntityWithAutomations()
         {
-            Automation<float> defaultAutomation = new(world, InterpolationMethod.FloatLinear, [new(0f, 0f)]);
-            Automation<float> triangleWave = new(world, InterpolationMethod.FloatLinear, [new(0f, 0f), new(1f, 1f), new(2f, 0f)], true);
+            AutomationEntity<float> defaultAutomation = new(world, InterpolationMethod.FloatLinear, [new(0f, 0f)]);
+            AutomationEntity<float> triangleWave = new(world, InterpolationMethod.FloatLinear, [new(0f, 0f), new(1f, 1f), new(2f, 0f)], true);
             StateMachine machine = new(world);
             machine.AddState("Entry State");
             machine.AddState("Other State");
