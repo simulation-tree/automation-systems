@@ -70,8 +70,8 @@ namespace Automations.Systems.Tests
             StatefulAutomationPlayer stateful = entity.Become<StatefulAutomationPlayer>();
             stateful.StateMachine = machine;
             stateful.AddParameter("pastrami", 0f);
-            stateful.AddOrSetLink<float>("Entry State", defaultAutomation);
-            stateful.AddOrSetLink<float>("Other State", triangleWave);
+            stateful.AddOrSetLinkToComponent<float>("Entry State", defaultAutomation);
+            stateful.AddOrSetLinkToComponent<float>("Other State", triangleWave);
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Entry State"));
 
