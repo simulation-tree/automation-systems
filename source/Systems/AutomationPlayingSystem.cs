@@ -3,6 +3,8 @@ using Collections;
 using Simulation;
 using System;
 using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using Unmanaged;
 using Worlds;
 
@@ -145,9 +147,10 @@ namespace Automations.Systems
                 {
                     uint bytePosition = player.target.bytePosition;
                     Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
-                    target = array.Read(bytePosition);
 
-                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataType.size);
+                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataTypeSize);
+
+                    target = array.Read(bytePosition);
                 }
                 else
                 {
@@ -155,7 +158,7 @@ namespace Automations.Systems
                     target = target.Read(player.target.bytePosition);
                 }
 
-                currentKeyframe.CopyTo(target, dataTypeSize);
+                currentKeyframe.CopyTo(target, keyframeSize);
             }
             else
             {
@@ -167,9 +170,10 @@ namespace Automations.Systems
                 {
                     uint bytePosition = player.target.bytePosition;
                     Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
-                    target = array.Read(bytePosition);
 
-                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataType.size);
+                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataTypeSize);
+
+                    target = array.Read(bytePosition);
                 }
                 else
                 {
@@ -178,7 +182,7 @@ namespace Automations.Systems
                 }
 
                 Interpolation interpolation = interpolationFunctions[index];
-                interpolation.Invoke(currentKeyframe, nextKeyframe, timeProgress, target, dataTypeSize);
+                interpolation.Invoke(currentKeyframe, nextKeyframe, timeProgress, target, keyframeSize);
             }
         }
 
@@ -198,6 +202,15 @@ namespace Automations.Systems
             {
                 throw new IndexOutOfRangeException("Index is out of range");
             }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Temp
+        {
+            public byte first;
+            public float second;
+            public Vector4 third;
+            public uint fourth;
         }
     }
 }

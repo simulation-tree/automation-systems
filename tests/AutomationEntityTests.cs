@@ -205,21 +205,21 @@ namespace Automations.Systems.Tests
         [Test]
         public void AnimateFieldOfArrayElement()
         {
-            AutomationEntity<Vector3> testAutomation = new(world, InterpolationMethod.Vector3Linear,
+            AutomationEntity<Vector4> testAutomation = new(world, InterpolationMethod.Vector4Linear,
             [
-                (0, Vector3.Zero),
-                (1f, Vector3.UnitX),
-                (2f, Vector3.UnitY),
-                (3f, Vector3.UnitZ),
-                (4f, Vector3.One),
+                (0, Vector4.Zero),
+                (1f, Vector4.UnitX),
+                (2f, Vector4.UnitY),
+                (3f, Vector4.UnitZ),
+                (4f, Vector4.UnitW),
             ]);
 
             Entity thingToAnimate = new(world);
             USpan<SomeProperty> array = thingToAnimate.CreateArray<SomeProperty>(4);
-            array[0] = new(5, new(0), true);
-            array[1] = new(3.14f, new(5), true);
-            array[2] = new(0, new(0), false);
-            array[3] = new(5, new(5), true);
+            array[0] = new(5, new(0), 1289718923);
+            array[1] = new(3.14f, new(5), 1289718923);
+            array[2] = new(0, new(0), 1289718923);
+            array[3] = new(5, new(5), 1289718923);
 
             uint arrayIndex = 1;
             AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
@@ -235,63 +235,72 @@ namespace Automations.Systems.Tests
 
                 SomeProperty arrayElement = array[arrayIndex];
                 Assert.That(arrayElement.dontTouchMe, Is.EqualTo(3.14f).Within(0.01f));
-                Assert.That(arrayElement.toTouchThat, Is.True);
+                Assert.That(arrayElement.toTouchThat, Is.EqualTo(1289718923));
 
-                Vector3 currentPosition = arrayElement.iDareYou;
+                Vector4 currentPosition = arrayElement.iDareYou;
                 if (time == TimeSpan.FromSeconds(0.5f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(1f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(1.5f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(2f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(2.5f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(3f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(3.5f))
                 {
-                    Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
-                    Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
-                    Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(0.5f).Within(0.01f));
                 }
                 else if (time == TimeSpan.FromSeconds(4f))
                 {
-                    Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
-                    Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
-                    Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
+                    Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
+                    Assert.That(currentPosition.W, Is.EqualTo(1f).Within(0.01f));
                 }
             }
 
-            Vector3 finalPosition = array[arrayIndex].iDareYou;
-            Assert.That(finalPosition.X, Is.EqualTo(1f).Within(0.01f));
-            Assert.That(finalPosition.Y, Is.EqualTo(1f).Within(0.01f));
-            Assert.That(finalPosition.Z, Is.EqualTo(1f).Within(0.01f));
+            Vector4 finalPosition = array[arrayIndex].iDareYou;
+            Assert.That(finalPosition.X, Is.EqualTo(0f).Within(0.01f));
+            Assert.That(finalPosition.Y, Is.EqualTo(0f).Within(0.01f));
+            Assert.That(finalPosition.Z, Is.EqualTo(0f).Within(0.01f));
+            Assert.That(finalPosition.W, Is.EqualTo(1f).Within(0.01f));
         }
     }
 }
