@@ -1,10 +1,7 @@
 ﻿using System.Numerics;
-using Worlds;
 
 namespace Automations.Systems.Tests
 {
-    [Component]
-    [ArrayElement]
     public struct Position
     {
         public Vector3 value;

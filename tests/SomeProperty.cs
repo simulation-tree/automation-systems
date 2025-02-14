@@ -1,10 +1,8 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using Worlds;
 
 namespace Automations.Systems.Tests
 {
-    [ArrayElement]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SomeProperty
     {
