@@ -1,5 +1,5 @@
 ﻿using Automations.Components;
-using Collections;
+using Collections.Generic;
 using Simulation;
 using System;
 using System.Diagnostics;

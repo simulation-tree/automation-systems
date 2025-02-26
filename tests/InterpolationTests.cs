@@ -101,8 +101,8 @@ namespace Automations.Systems.Tests
         [Test]
         public unsafe void VerifyInterpolatingFromArray()
         {
-            using Allocation component = new(sizeof(float));
-            using Allocation keyframes = new(sizeof(float) * 2);
+            using Allocation component = Allocation.Create(sizeof(float));
+            using Allocation keyframes = Allocation.Create(sizeof(float) * 2);
             keyframes.Write(sizeof(float) * 0, 0f);
             keyframes.Write(sizeof(float) * 1, 8f);
 
