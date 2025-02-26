@@ -1,4 +1,5 @@
 ﻿using Automations.Components;
+using Collections.Generic;
 using Simulation;
 using System;
 using Unmanaged;
@@ -30,9 +31,9 @@ namespace Automations.Systems
                             throw new InvalidOperationException($"Stateful entity `{statefulEntity}` does not have a state machine reference");
                         }
 
-                        USpan<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
+                        Array<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
                         uint stateMachineEntity = world.GetReference(statefulEntity, stateful.stateMachineReference);
-                        USpan<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
+                        Array<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
                         if (stateful.state == default)
                         {
                             stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity).entryState;
@@ -44,14 +45,14 @@ namespace Automations.Systems
 
                         AvailableState currentState = availableStates[stateful.state - 1];
                         int currentStateHash = currentState.name.GetHashCode();
-                        USpan<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
+                        Array<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
                         foreach (Transition transition in transitions)
                         {
                             if (transition.sourceStateHash == currentStateHash)
                             {
-                                if (IsConditionMet(transition, parameters))
+                                if (IsConditionMet(transition, parameters.AsSpan()))
                                 {
-                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates, out uint newStateIndex))
+                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates.AsSpan(), out uint newStateIndex))
                                     {
                                         stateful.state = newStateIndex + 1;
                                         break;

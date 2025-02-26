@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Unmanaged;
 using Worlds;
+using Array = Collections.Array;
 
 namespace Automations.Systems
 {
@@ -80,16 +81,16 @@ namespace Automations.Systems
             ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
-            Allocation keyframeValues = world.GetArray(automationEntity, keyframeType, out uint keyframeCount);
-            USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).As<float>();
-            if (keyframeCount == 0)
+            Array keyframeValues = world.GetArray(automationEntity, keyframeType);
+            USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
+            if (keyframeValues.Length == 0)
             {
                 return;
             }
 
             ushort keyframeSize = keyframeType.size;
             float timeInSeconds = (float)time.TotalSeconds;
-            float finalKeyframeTime = keyframeTimes[keyframeCount - 1];
+            float finalKeyframeTime = keyframeTimes[keyframeValues.Length - 1];
             if (timeInSeconds >= finalKeyframeTime)
             {
                 if (automationComponent.loop)
@@ -103,21 +104,18 @@ namespace Automations.Systems
             }
 
             uint current = 0;
-            if (keyframeCount > 0)
+            for (uint i = 0; i < keyframeValues.Length; i++)
             {
-                for (uint i = 0; i < keyframeCount; i++)
+                float keyframeTime = keyframeTimes[i];
+                if (timeInSeconds >= keyframeTime)
                 {
-                    float keyframeTime = keyframeTimes[i];
-                    if (timeInSeconds >= keyframeTime)
-                    {
-                        current = i;
-                    }
+                    current = i;
                 }
             }
 
             bool loop = automationComponent.loop;
             uint next = current + 1;
-            if (next == keyframeCount)
+            if (next == keyframeValues.Length)
             {
                 if (loop)
                 {
@@ -129,8 +127,8 @@ namespace Automations.Systems
                 }
             }
 
-            Allocation currentKeyframe = keyframeValues.Read(current * keyframeSize);
-            Allocation nextKeyframe = keyframeValues.Read(next * keyframeSize);
+            Allocation currentKeyframe = keyframeValues.Items.Read(current * keyframeSize);
+            Allocation nextKeyframe = keyframeValues.Items.Read(next * keyframeSize);
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
@@ -146,11 +144,11 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
+                    Array array = world.GetArray(playerEntity, dataType);
 
-                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataTypeSize);
+                    ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
-                    target = array.Read(bytePosition);
+                    target = array.Items.Read(bytePosition);
                 }
                 else
                 {
@@ -169,11 +167,11 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Allocation array = world.GetArray(playerEntity, dataType, out uint arrayLength);
+                    Array array = world.GetArray(playerEntity, dataType);
 
-                    ThrowIfOutOfArrayRange(bytePosition, arrayLength * dataTypeSize);
+                    ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
-                    target = array.Read(bytePosition);
+                    target = array.Items.Read(bytePosition);
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 ﻿using Automations.Components;
+using Collections.Generic;
 using Simulation;
 using System;
 using Unmanaged;
@@ -37,10 +38,10 @@ namespace Automations.Systems
                         uint statefulEntity = entities[i];
                         rint stateMachineReference = statefulComponent.stateMachineReference;
                         uint stateMachineEntity = world.GetReference(statefulEntity, stateMachineReference);
-                        USpan<AvailableState> states = world.GetArray<AvailableState>(stateMachineEntity);
+                        Array<AvailableState> states = world.GetArray<AvailableState>(stateMachineEntity);
                         AvailableState state = states[statefulComponent.state - 1];
                         int stateNameHash = state.name.GetHashCode();
-                        USpan<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
+                        Array<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
                         for (uint l = 0; l < links.Length; l++)
                         {
                             StateAutomationLink link = links[l];

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Collections.Generic;
+using System;
 using System.Numerics;
 using Unmanaged;
 using Worlds;
@@ -127,7 +128,7 @@ namespace Automations.Systems.Tests
             ]);
 
             Entity thingToAnimate = new(world);
-            USpan<Position> array = thingToAnimate.CreateArray<Position>(4);
+            Array<Position> array = thingToAnimate.CreateArray<Position>(4);
             array[0] = new(5, 0, 0);
             array[1] = new(0, 5, 0);
             array[2] = new(0, 0, 5);
@@ -215,7 +216,7 @@ namespace Automations.Systems.Tests
             ]);
 
             Entity thingToAnimate = new(world);
-            USpan<SomeProperty> array = thingToAnimate.CreateArray<SomeProperty>(4);
+            Array<SomeProperty> array = thingToAnimate.CreateArray<SomeProperty>(4);
             array[0] = new(5, new(0), 1289718923);
             array[1] = new(3.14f, new(5), 1289718923);
             array[2] = new(0, new(0), 1289718923);
