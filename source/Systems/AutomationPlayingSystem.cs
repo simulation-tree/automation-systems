@@ -81,7 +81,7 @@ namespace Automations.Systems
             ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
-            Array keyframeValues = world.GetArray(automationEntity, keyframeType);
+            Array keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayElementType);
             USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
@@ -144,7 +144,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType);
+                    Array array = world.GetArray(playerEntity, dataType.ArrayElementType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
@@ -152,7 +152,7 @@ namespace Automations.Systems
                 }
                 else
                 {
-                    target = world.GetComponent(playerEntity, dataType);
+                    target = world.GetComponent(playerEntity, dataType.ComponentType);
                     target = target.Read(player.target.bytePosition);
                 }
 
@@ -167,7 +167,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType);
+                    Array array = world.GetArray(playerEntity, dataType.ArrayElementType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
@@ -175,7 +175,7 @@ namespace Automations.Systems
                 }
                 else
                 {
-                    target = world.GetComponent(playerEntity, dataType);
+                    target = world.GetComponent(playerEntity, dataType.ComponentType);
                     target = target.Read(player.target.bytePosition);
                 }
 
