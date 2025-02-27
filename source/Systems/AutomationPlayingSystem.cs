@@ -36,10 +36,10 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentType componentType = world.Schema.GetComponent<IsAutomationPlayer>();
+            ComponentType componentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
-                if (chunk.Definition.Contains(componentType))
+                if (chunk.Definition.ContainsComponent(componentType))
                 {
                     USpan<uint> entities = chunk.Entities;
                     USpan<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
@@ -81,7 +81,7 @@ namespace Automations.Systems
             ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
-            Array keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayElementType);
+            Array keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
             USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
@@ -144,7 +144,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType.ArrayElementType);
+                    Array array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
@@ -167,7 +167,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType.ArrayElementType);
+                    Array array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 

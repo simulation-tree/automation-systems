@@ -15,10 +15,10 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentType statefulComponentType = world.Schema.GetComponent<IsStateful>();
+            ComponentType statefulComponentType = world.Schema.GetComponentType<IsStateful>();
             foreach (Chunk chunk in world.Chunks)
             {
-                if (chunk.Definition.Contains(statefulComponentType))
+                if (chunk.Definition.ContainsComponent(statefulComponentType))
                 {
                     USpan<uint> entities = chunk.Entities;
                     USpan<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);

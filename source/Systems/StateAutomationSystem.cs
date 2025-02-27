@@ -15,12 +15,12 @@ namespace Automations.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ComponentType statefulComponentType = world.Schema.GetComponent<IsStateful>();
-            ComponentType automationComponentType = world.Schema.GetComponent<IsAutomationPlayer>();
+            ComponentType statefulComponentType = world.Schema.GetComponentType<IsStateful>();
+            ComponentType automationComponentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
-                if (definition.Contains(statefulComponentType) && definition.Contains(automationComponentType))
+                if (definition.ContainsComponent(statefulComponentType) && definition.ContainsComponent(automationComponentType))
                 {
                     USpan<uint> entities = chunk.Entities;
                     USpan<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
