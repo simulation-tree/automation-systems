@@ -1,5 +1,4 @@
 ﻿using Automations.Components;
-using Collections.Generic;
 using Simulation;
 using System;
 using Unmanaged;
@@ -31,9 +30,9 @@ namespace Automations.Systems
                             throw new InvalidOperationException($"Stateful entity `{statefulEntity}` does not have a state machine reference");
                         }
 
-                        Array<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
+                        Values<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
                         uint stateMachineEntity = world.GetReference(statefulEntity, stateful.stateMachineReference);
-                        Array<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
+                        Values<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
                         if (stateful.state == default)
                         {
                             stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity).entryState;
@@ -45,7 +44,7 @@ namespace Automations.Systems
 
                         AvailableState currentState = availableStates[stateful.state - 1];
                         int currentStateHash = currentState.name.GetHashCode();
-                        Array<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
+                        Values<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
                         foreach (Transition transition in transitions)
                         {
                             if (transition.sourceStateHash == currentStateHash)

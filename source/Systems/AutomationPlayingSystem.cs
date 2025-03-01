@@ -7,7 +7,6 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Unmanaged;
 using Worlds;
-using Array = Collections.Array;
 
 namespace Automations.Systems
 {
@@ -81,7 +80,7 @@ namespace Automations.Systems
             ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
-            Array keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
+            Values keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
             USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
@@ -127,8 +126,8 @@ namespace Automations.Systems
                 }
             }
 
-            Allocation currentKeyframe = keyframeValues.Items.Read(current * keyframeSize);
-            Allocation nextKeyframe = keyframeValues.Items.Read(next * keyframeSize);
+            Allocation currentKeyframe = keyframeValues.Read(current * keyframeSize);
+            Allocation nextKeyframe = keyframeValues.Read(next * keyframeSize);
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
@@ -144,11 +143,11 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType.ArrayType);
+                    Values array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
-                    target = array.Items.Read(bytePosition);
+                    target = array.Read(bytePosition);
                 }
                 else
                 {
@@ -167,11 +166,11 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
-                    Array array = world.GetArray(playerEntity, dataType.ArrayType);
+                    Values array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
-                    target = array.Items.Read(bytePosition);
+                    target = array.Read(bytePosition);
                 }
                 else
                 {
