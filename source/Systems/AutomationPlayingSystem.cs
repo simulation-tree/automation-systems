@@ -126,8 +126,8 @@ namespace Automations.Systems
                 }
             }
 
-            Allocation currentKeyframe = keyframeValues.Read(current * keyframeSize);
-            Allocation nextKeyframe = keyframeValues.Read(next * keyframeSize);
+            MemoryAddress currentKeyframe = keyframeValues.Read(current * keyframeSize);
+            MemoryAddress nextKeyframe = keyframeValues.Read(next * keyframeSize);
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
@@ -139,7 +139,7 @@ namespace Automations.Systems
 
             if (automationComponent.interpolationMethod == default)
             {
-                Allocation target;
+                MemoryAddress target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;
@@ -162,7 +162,7 @@ namespace Automations.Systems
                 byte index = automationComponent.interpolationMethod.value;
                 index--;
 
-                Allocation target;
+                MemoryAddress target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
                     uint bytePosition = player.target.bytePosition;

@@ -11,47 +11,47 @@ namespace Automations.Systems.Tests
         public void VerifyHold()
         {
             Entity entity = new(world);
-            entity.AddComponent<FixedString>();
+            entity.AddComponent<ASCIIText256>();
 
-            AutomationEntity<FixedString> animation = new(world);
+            AutomationEntity<ASCIIText256> animation = new(world);
             animation.AddKeyframe(0f, "this");
             animation.AddKeyframe(1f, "is");
             animation.AddKeyframe(2f, "sum");
             animation.AddKeyframe(3f, "text");
 
             AutomationPlayer entityPlayer = entity.Become<AutomationPlayer>();
-            entityPlayer.SetAutomationForComponent<FixedString>(animation);
+            entityPlayer.SetAutomationForComponent<ASCIIText256>(animation);
             entityPlayer.Play();
 
             Assert.That(animation.Count, Is.EqualTo(4));
 
             simulator.Update(TimeSpan.FromSeconds(0f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("this"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
             simulator.Update(TimeSpan.FromSeconds(0.5f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("this"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
             simulator.Update(TimeSpan.FromSeconds(0.5f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("is"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("is"));
 
             simulator.Update(TimeSpan.FromSeconds(1f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("sum"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
             simulator.Update(TimeSpan.FromSeconds(0.1f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("sum"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
             simulator.Update(TimeSpan.FromSeconds(0.9f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("text"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
 
             simulator.Update(TimeSpan.FromSeconds(0.5f));
 
-            Assert.That(entity.GetComponent<FixedString>().ToString(), Is.EqualTo("text"));
+            Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
         }
 
         [Test]
@@ -101,13 +101,13 @@ namespace Automations.Systems.Tests
         [Test]
         public unsafe void VerifyInterpolatingFromArray()
         {
-            using Allocation component = Allocation.Create(sizeof(float));
-            using Allocation keyframes = Allocation.Create(sizeof(float) * 2);
+            using MemoryAddress component = MemoryAddress.Allocate((uint)sizeof(float));
+            using MemoryAddress keyframes = MemoryAddress.Allocate((uint)(sizeof(float) * 2));
             keyframes.Write(sizeof(float) * 0, 0f);
             keyframes.Write(sizeof(float) * 1, 8f);
 
-            Allocation current = keyframes.Read(sizeof(float) * 0);
-            Allocation next = keyframes.Read(sizeof(float) * 1);
+            MemoryAddress current = keyframes.Read(sizeof(float) * 0);
+            MemoryAddress next = keyframes.Read(sizeof(float) * 1);
             Interpolation floatInterpolation = BuiltInInterpolations.all[InterpolationMethod.FloatLinear];
             floatInterpolation.Invoke(current, next, 0.5f, component, sizeof(float));
 
