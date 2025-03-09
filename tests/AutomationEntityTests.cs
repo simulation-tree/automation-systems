@@ -132,7 +132,7 @@ namespace Automations.Systems.Tests
             array[2] = new(0, 0, 5);
             array[3] = new(5, 5, 5);
 
-            uint arrayIndex = 1;
+            int arrayIndex = 1;
             AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
             thingPlayer.SetAutomationForArrayElement<Position>(testAutomation, arrayIndex);
             thingPlayer.Play();
@@ -220,7 +220,7 @@ namespace Automations.Systems.Tests
             array[2] = new(0, new(0), 1289718923);
             array[3] = new(5, new(5), 1289718923);
 
-            uint arrayIndex = 1;
+            int arrayIndex = 1;
             AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
             thingPlayer.SetAutomationForArrayElement<SomeProperty>(testAutomation, arrayIndex, nameof(SomeProperty.iDareYou));
             thingPlayer.Play();

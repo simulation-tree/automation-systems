@@ -1,7 +1,6 @@
 ﻿using Automations.Components;
 using Simulation;
 using System;
-using Unmanaged;
 using Worlds;
 
 namespace Automations.Systems
@@ -19,9 +18,9 @@ namespace Automations.Systems
             {
                 if (chunk.Definition.ContainsComponent(statefulComponentType))
                 {
-                    USpan<uint> entities = chunk.Entities;
-                    USpan<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
-                    for (uint i = 0; i < entities.Length; i++)
+                    ReadOnlySpan<uint> entities = chunk.Entities;
+                    Span<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful stateful = ref components[i];
                         uint statefulEntity = entities[i];
@@ -51,7 +50,7 @@ namespace Automations.Systems
                             {
                                 if (IsConditionMet(transition, parameters.AsSpan()))
                                 {
-                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates.AsSpan(), out uint newStateIndex))
+                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates.AsSpan(), out int newStateIndex))
                                     {
                                         stateful.state = newStateIndex + 1;
                                         break;
@@ -72,7 +71,7 @@ namespace Automations.Systems
         {
         }
 
-        private static bool IsConditionMet(Transition transition, USpan<Parameter> parameters)
+        private static bool IsConditionMet(Transition transition, Span<Parameter> parameters)
         {
             float value = transition.value;
             Transition.Condition condition = transition.condition;
@@ -90,7 +89,7 @@ namespace Automations.Systems
             };
         }
 
-        private static float GetParameterValue(int nameHash, USpan<Parameter> parameters)
+        private static float GetParameterValue(int nameHash, Span<Parameter> parameters)
         {
             foreach (Parameter parameter in parameters)
             {
@@ -103,9 +102,9 @@ namespace Automations.Systems
             throw new InvalidOperationException($"Parameter with name hash `{nameHash}` not found");
         }
 
-        private static bool TryGetAvailableStateIndex(int nameHash, USpan<AvailableState> availableStates, out uint index)
+        private static bool TryGetAvailableStateIndex(int nameHash, Span<AvailableState> availableStates, out int index)
         {
-            for (uint i = 0; i < availableStates.Length; i++)
+            for (int i = 0; i < availableStates.Length; i++)
             {
                 if (availableStates[i].name.GetHashCode() == nameHash)
                 {

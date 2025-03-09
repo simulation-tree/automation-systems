@@ -40,9 +40,9 @@ namespace Automations.Systems
             {
                 if (chunk.Definition.ContainsComponent(componentType))
                 {
-                    USpan<uint> entities = chunk.Entities;
-                    USpan<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
-                    for (uint i = 0; i < entities.Length; i++)
+                    ReadOnlySpan<uint> entities = chunk.Entities;
+                    Span<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
+                    for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsAutomationPlayer player = ref components[i];
                         if (player.automationReference != default)
@@ -81,7 +81,7 @@ namespace Automations.Systems
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
             Values keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
-            USpan<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
+            System.Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
                 return;
@@ -102,8 +102,8 @@ namespace Automations.Systems
                 }
             }
 
-            uint current = 0;
-            for (uint i = 0; i < keyframeValues.Length; i++)
+            int current = 0;
+            for (int i = 0; i < keyframeValues.Length; i++)
             {
                 float keyframeTime = keyframeTimes[i];
                 if (timeInSeconds >= keyframeTime)
@@ -113,7 +113,7 @@ namespace Automations.Systems
             }
 
             bool loop = automationComponent.loop;
-            uint next = current + 1;
+            int next = current + 1;
             if (next == keyframeValues.Length)
             {
                 if (loop)
@@ -142,7 +142,7 @@ namespace Automations.Systems
                 MemoryAddress target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
-                    uint bytePosition = player.target.bytePosition;
+                    int bytePosition = player.target.bytePosition;
                     Values array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
@@ -165,7 +165,7 @@ namespace Automations.Systems
                 MemoryAddress target;
                 if (dataType.kind == DataType.Kind.ArrayElement)
                 {
-                    uint bytePosition = player.target.bytePosition;
+                    int bytePosition = player.target.bytePosition;
                     Values array = world.GetArray(playerEntity, dataType.ArrayType);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
@@ -193,7 +193,7 @@ namespace Automations.Systems
         }
 
         [Conditional("DEBUG")]
-        private static void ThrowIfOutOfArrayRange(uint bytePosition, uint byteLength)
+        private static void ThrowIfOutOfArrayRange(int bytePosition, int byteLength)
         {
             if (bytePosition >= byteLength)
             {

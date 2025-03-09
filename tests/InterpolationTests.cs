@@ -101,8 +101,8 @@ namespace Automations.Systems.Tests
         [Test]
         public unsafe void VerifyInterpolatingFromArray()
         {
-            using MemoryAddress component = MemoryAddress.Allocate((uint)sizeof(float));
-            using MemoryAddress keyframes = MemoryAddress.Allocate((uint)(sizeof(float) * 2));
+            using MemoryAddress component = MemoryAddress.Allocate(sizeof(float));
+            using MemoryAddress keyframes = MemoryAddress.Allocate(sizeof(float) * 2);
             keyframes.Write(sizeof(float) * 0, 0f);
             keyframes.Write(sizeof(float) * 1, 8f);
 

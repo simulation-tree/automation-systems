@@ -1,7 +1,6 @@
 ﻿using Automations.Components;
 using Simulation;
 using System;
-using Unmanaged;
 using Worlds;
 
 namespace Automations.Systems
@@ -21,10 +20,10 @@ namespace Automations.Systems
                 Definition definition = chunk.Definition;
                 if (definition.ContainsComponent(statefulComponentType) && definition.ContainsComponent(automationComponentType))
                 {
-                    USpan<uint> entities = chunk.Entities;
-                    USpan<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
-                    USpan<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
-                    for (uint i = 0; i < entities.Length; i++)
+                    ReadOnlySpan<uint> entities = chunk.Entities;
+                    Span<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    Span<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
+                    for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful statefulComponent = ref statefulComponents[i];
                         ref IsAutomationPlayer automationComponent = ref automationComponents[i];
@@ -41,7 +40,7 @@ namespace Automations.Systems
                         AvailableState state = states[statefulComponent.state - 1];
                         int stateNameHash = state.name.GetHashCode();
                         Values<StateAutomationLink> links = world.GetArray<StateAutomationLink>(statefulEntity);
-                        for (uint l = 0; l < links.Length; l++)
+                        for (int l = 0; l < links.Length; l++)
                         {
                             StateAutomationLink link = links[l];
                             if (link.stateNameHash == stateNameHash)
