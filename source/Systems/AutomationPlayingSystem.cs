@@ -81,7 +81,7 @@ namespace Automations.Systems
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
             Values keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
-            System.Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
+            Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
                 return;
