@@ -140,7 +140,7 @@ namespace Automations.Systems
             if (automationComponent.interpolationMethod == default)
             {
                 MemoryAddress target;
-                if (dataType.kind == DataType.Kind.ArrayElement)
+                if (dataType.kind == DataType.Kind.Array)
                 {
                     int bytePosition = player.target.bytePosition;
                     Values array = world.GetArray(playerEntity, dataType.ArrayType);
@@ -163,7 +163,7 @@ namespace Automations.Systems
                 index--;
 
                 MemoryAddress target;
-                if (dataType.kind == DataType.Kind.ArrayElement)
+                if (dataType.kind == DataType.Kind.Array)
                 {
                     int bytePosition = player.target.bytePosition;
                     Values array = world.GetArray(playerEntity, dataType.ArrayType);
@@ -186,9 +186,9 @@ namespace Automations.Systems
         [Conditional("DEBUG")]
         private static void ThrowIfDataTypeKindNotSupported(DataType.Kind kind)
         {
-            if (kind != DataType.Kind.Component && kind != DataType.Kind.ArrayElement)
+            if (kind != DataType.Kind.Component && kind != DataType.Kind.Array)
             {
-                throw new NotSupportedException("Only components and array elements are supported");
+                throw new NotSupportedException("Only components and arrays are supported");
             }
         }
 
