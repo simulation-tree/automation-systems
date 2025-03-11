@@ -126,8 +126,8 @@ namespace Automations.Systems
                 }
             }
 
-            MemoryAddress currentKeyframe = keyframeValues.Read(current * keyframeSize);
-            MemoryAddress nextKeyframe = keyframeValues.Read(next * keyframeSize);
+            MemoryAddress currentKeyframe = keyframeValues[current];
+            MemoryAddress nextKeyframe = keyframeValues[next];
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
