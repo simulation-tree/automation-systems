@@ -132,9 +132,9 @@ namespace Automations.Systems.Tests
             array[2] = new(0, 0, 5);
             array[3] = new(5, 5, 5);
 
-            int arrayIndex = 1;
+            int index = 1;
             AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
-            thingPlayer.SetAutomationForArrayElement<Position>(testAutomation, arrayIndex);
+            thingPlayer.SetAutomationForArrayElement<Position>(testAutomation, index);
             thingPlayer.Play();
 
             TimeSpan delta = TimeSpan.FromSeconds(0.1f);
@@ -144,7 +144,7 @@ namespace Automations.Systems.Tests
                 simulator.Update(delta);
                 time += delta;
 
-                Vector3 currentPosition = array[arrayIndex].value;
+                Vector3 currentPosition = array[index].value;
                 if (time == TimeSpan.FromSeconds(0.5f))
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
@@ -195,7 +195,7 @@ namespace Automations.Systems.Tests
                 }
             }
 
-            Vector3 finalPosition = array[arrayIndex].value;
+            Vector3 finalPosition = array[index].value;
             Assert.That(finalPosition.X, Is.EqualTo(1f).Within(0.01f));
             Assert.That(finalPosition.Y, Is.EqualTo(1f).Within(0.01f));
             Assert.That(finalPosition.Z, Is.EqualTo(1f).Within(0.01f));
@@ -220,9 +220,9 @@ namespace Automations.Systems.Tests
             array[2] = new(0, new(0), 1289718923);
             array[3] = new(5, new(5), 1289718923);
 
-            int arrayIndex = 1;
+            int index = 1;
             AutomationPlayer thingPlayer = thingToAnimate.Become<AutomationPlayer>();
-            thingPlayer.SetAutomationForArrayElement<SomeProperty>(testAutomation, arrayIndex, nameof(SomeProperty.iDareYou));
+            thingPlayer.SetAutomationForArrayElement<SomeProperty>(testAutomation, index, nameof(SomeProperty.iDareYou));
             thingPlayer.Play();
 
             TimeSpan delta = TimeSpan.FromSeconds(0.1f);
@@ -232,7 +232,7 @@ namespace Automations.Systems.Tests
                 simulator.Update(delta);
                 time += delta;
 
-                SomeProperty arrayElement = array[arrayIndex];
+                SomeProperty arrayElement = array[index];
                 Assert.That(arrayElement.dontTouchMe, Is.EqualTo(3.14f).Within(0.01f));
                 Assert.That(arrayElement.toTouchThat, Is.EqualTo(1289718923));
 
@@ -295,7 +295,7 @@ namespace Automations.Systems.Tests
                 }
             }
 
-            Vector4 finalPosition = array[arrayIndex].iDareYou;
+            Vector4 finalPosition = array[index].iDareYou;
             Assert.That(finalPosition.X, Is.EqualTo(0f).Within(0.01f));
             Assert.That(finalPosition.Y, Is.EqualTo(0f).Within(0.01f));
             Assert.That(finalPosition.Z, Is.EqualTo(0f).Within(0.01f));

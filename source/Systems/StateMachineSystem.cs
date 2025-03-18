@@ -7,19 +7,23 @@ namespace Automations.Systems
 {
     public readonly partial struct StateMachineSystem : ISystem
     {
-        void ISystem.Start(in SystemContainer systemContainer, in World world)
+        readonly void IDisposable.Dispose()
         {
         }
 
-        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
+        void ISystem.Start(in SystemContext context, in World world)
         {
-            ComponentType statefulComponentType = world.Schema.GetComponentType<IsStateful>();
+        }
+
+        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
+        {
+            int statefulComponentType = world.Schema.GetComponentType<IsStateful>();
             foreach (Chunk chunk in world.Chunks)
             {
                 if (chunk.Definition.ContainsComponent(statefulComponentType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    Span<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    ComponentEnumerator<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful stateful = ref components[i];
@@ -67,7 +71,7 @@ namespace Automations.Systems
             }
         }
 
-        void ISystem.Finish(in SystemContainer systemContainer, in World world)
+        void ISystem.Finish(in SystemContext context, in World world)
         {
         }
 
@@ -113,7 +117,7 @@ namespace Automations.Systems
                 }
             }
 
-            index = default;
+            index = -1;
             return false;
         }
     }

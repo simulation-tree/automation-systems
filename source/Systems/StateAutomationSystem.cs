@@ -7,22 +7,26 @@ namespace Automations.Systems
 {
     public readonly partial struct StateAutomationSystem : ISystem
     {
-        void ISystem.Start(in SystemContainer systemContainer, in World world)
+        readonly void IDisposable.Dispose()
         {
         }
 
-        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
+        void ISystem.Start(in SystemContext context, in World world)
         {
-            ComponentType statefulComponentType = world.Schema.GetComponentType<IsStateful>();
-            ComponentType automationComponentType = world.Schema.GetComponentType<IsAutomationPlayer>();
+        }
+
+        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
+        {
+            int statefulComponentType = world.Schema.GetComponentType<IsStateful>();
+            int automationComponentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
                 if (definition.ContainsComponent(statefulComponentType) && definition.ContainsComponent(automationComponentType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    Span<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
-                    Span<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
+                    ComponentEnumerator<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    ComponentEnumerator<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful statefulComponent = ref statefulComponents[i];
@@ -76,7 +80,7 @@ namespace Automations.Systems
             }
         }
 
-        void ISystem.Finish(in SystemContainer systemContainer, in World world)
+        void ISystem.Finish(in SystemContext context, in World world)
         {
         }
     }

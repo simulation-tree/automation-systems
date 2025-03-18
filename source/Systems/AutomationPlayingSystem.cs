@@ -14,34 +14,33 @@ namespace Automations.Systems
     {
         private readonly List<Interpolation> interpolationFunctions;
 
-        private AutomationPlayingSystem(List<Interpolation> interpolationFunctions)
+        public AutomationPlayingSystem()
         {
-            this.interpolationFunctions = interpolationFunctions;
-        }
-
-        void ISystem.Start(in SystemContainer systemContainer, in World world)
-        {
-            if (systemContainer.World == world)
+            interpolationFunctions = new(4);
+            foreach (Interpolation interpolation in BuiltInInterpolations.all)
             {
-                List<Interpolation> interpolationFunctions = new();
-                foreach (Interpolation interpolation in BuiltInInterpolations.all)
-                {
-                    interpolationFunctions.Add(interpolation);
-                }
-
-                systemContainer.Write(new AutomationPlayingSystem(interpolationFunctions));
+                interpolationFunctions.Add(interpolation);
             }
         }
 
-        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
+        public readonly void Dispose()
         {
-            ComponentType componentType = world.Schema.GetComponentType<IsAutomationPlayer>();
+            interpolationFunctions.Dispose();
+        }
+
+        void ISystem.Start(in SystemContext context, in World world)
+        {
+        }
+
+        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
+        {
+            int componentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
                 if (chunk.Definition.ContainsComponent(componentType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    Span<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
+                    ComponentEnumerator<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsAutomationPlayer player = ref components[i];
@@ -57,12 +56,8 @@ namespace Automations.Systems
             }
         }
 
-        void ISystem.Finish(in SystemContainer systemContainer, in World world)
+        void ISystem.Finish(in SystemContext context, in World world)
         {
-            if (systemContainer.World == world)
-            {
-                interpolationFunctions.Dispose();
-            }
         }
 
         public readonly InterpolationMethod AddInterpolation(Interpolation interpolation)
@@ -80,7 +75,7 @@ namespace Automations.Systems
             ushort dataTypeSize = dataType.size;
             IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
             DataType keyframeType = automationComponent.keyframeType;
-            Values keyframeValues = world.GetArray(automationEntity, keyframeType.ArrayType);
+            Values keyframeValues = world.GetArray(automationEntity, keyframeType.index);
             Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
@@ -143,7 +138,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.Array)
                 {
                     int bytePosition = player.target.bytePosition;
-                    Values array = world.GetArray(playerEntity, dataType.ArrayType);
+                    Values array = world.GetArray(playerEntity, dataType.index);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
@@ -151,7 +146,7 @@ namespace Automations.Systems
                 }
                 else
                 {
-                    target = world.GetComponent(playerEntity, dataType.ComponentType);
+                    target = world.GetComponent(playerEntity, dataType.index);
                     target = target.Read(player.target.bytePosition);
                 }
 
@@ -166,7 +161,7 @@ namespace Automations.Systems
                 if (dataType.kind == DataType.Kind.Array)
                 {
                     int bytePosition = player.target.bytePosition;
-                    Values array = world.GetArray(playerEntity, dataType.ArrayType);
+                    Values array = world.GetArray(playerEntity, dataType.index);
 
                     ThrowIfOutOfArrayRange(bytePosition, array.Length * dataTypeSize);
 
@@ -174,7 +169,7 @@ namespace Automations.Systems
                 }
                 else
                 {
-                    target = world.GetComponent(playerEntity, dataType.ComponentType);
+                    target = world.GetComponent(playerEntity, dataType.index);
                     target = target.Read(player.target.bytePosition);
                 }
 
@@ -199,15 +194,6 @@ namespace Automations.Systems
             {
                 throw new IndexOutOfRangeException("Index is out of range");
             }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Temp
-        {
-            public byte first;
-            public float second;
-            public Vector4 third;
-            public uint fourth;
         }
     }
 }
