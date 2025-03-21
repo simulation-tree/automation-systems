@@ -52,9 +52,9 @@ namespace Automations.Systems
                         {
                             if (transition.sourceStateHash == currentStateHash)
                             {
-                                if (IsConditionMet(transition, parameters.AsSpan()))
+                                if (IsConditionMet(transition, parameters))
                                 {
-                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates.AsSpan(), out int newStateIndex))
+                                    if (TryGetAvailableStateIndex(transition.destinationStateHash, availableStates, out int newStateIndex))
                                     {
                                         stateful.state = newStateIndex + 1;
                                         break;
