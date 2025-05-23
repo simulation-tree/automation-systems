@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Worlds;
 
 namespace Automations.Systems.Tests
@@ -50,56 +49,56 @@ namespace Automations.Systems.Tests
             thingPlayer.SetAutomationForComponent<Position>(testAutomation);
             thingPlayer.Play();
 
-            TimeSpan delta = TimeSpan.FromSeconds(0.1f);
-            TimeSpan time = TimeSpan.Zero;
-            while (time < TimeSpan.FromSeconds(5f))
+            double delta = 0.1;
+            double time = 0;
+            while (time < 5)
             {
-                simulator.Update(delta);
+                Update(delta);
                 time += delta;
                 Vector3 currentPosition = thingToMove.GetComponent<Position>().value;
-                if (time == TimeSpan.FromSeconds(0.5f))
+                if (time == 0.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1f))
+                else if (time == 1)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1.5f))
+                else if (time == 1.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2f))
+                else if (time == 2)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2.5f))
+                else if (time == 2.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3f))
+                else if (time == 3)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3.5f))
+                else if (time == 3.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(4f))
+                else if (time == 4)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
@@ -137,57 +136,57 @@ namespace Automations.Systems.Tests
             thingPlayer.SetAutomationForArrayElement<Position>(testAutomation, index);
             thingPlayer.Play();
 
-            TimeSpan delta = TimeSpan.FromSeconds(0.1f);
-            TimeSpan time = TimeSpan.Zero;
-            while (time < TimeSpan.FromSeconds(5f))
+            double delta = 0.1;
+            double time = 0;
+            while (time < 5)
             {
-                simulator.Update(delta);
+                Update(delta);
                 time += delta;
 
                 Vector3 currentPosition = array[index].value;
-                if (time == TimeSpan.FromSeconds(0.5f))
+                if (time == 0.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1f))
+                else if (time == 1)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1.5f))
+                else if (time == 1.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2f))
+                else if (time == 2)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2.5f))
+                else if (time == 2.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3f))
+                else if (time == 3)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3.5f))
+                else if (time == 3.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(4f))
+                else if (time == 4)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
@@ -225,11 +224,11 @@ namespace Automations.Systems.Tests
             thingPlayer.SetAutomationForArrayElement<SomeProperty>(testAutomation, index, nameof(SomeProperty.iDareYou));
             thingPlayer.Play();
 
-            TimeSpan delta = TimeSpan.FromSeconds(0.1f);
-            TimeSpan time = TimeSpan.Zero;
-            while (time < TimeSpan.FromSeconds(5f))
+            double delta = 0.1f;
+            double time = 0;
+            while (time < 5)
             {
-                simulator.Update(delta);
+                Update(delta);
                 time += delta;
 
                 SomeProperty arrayElement = array[index];
@@ -237,56 +236,56 @@ namespace Automations.Systems.Tests
                 Assert.That(arrayElement.toTouchThat, Is.EqualTo(1289718923));
 
                 Vector4 currentPosition = arrayElement.iDareYou;
-                if (time == TimeSpan.FromSeconds(0.5f))
+                if (time == 0.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1f))
+                else if (time == 1)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(1.5f))
+                else if (time == 1.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2f))
+                else if (time == 2)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(2.5f))
+                else if (time == 2.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3f))
+                else if (time == 3)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(1f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(3.5f))
+                else if (time == 3.5)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Z, Is.EqualTo(0.5f).Within(0.01f));
                     Assert.That(currentPosition.W, Is.EqualTo(0.5f).Within(0.01f));
                 }
-                else if (time == TimeSpan.FromSeconds(4f))
+                else if (time == 4)
                 {
                     Assert.That(currentPosition.X, Is.EqualTo(0f).Within(0.01f));
                     Assert.That(currentPosition.Y, Is.EqualTo(0f).Within(0.01f));

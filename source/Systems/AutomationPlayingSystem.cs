@@ -8,7 +8,7 @@ using Worlds;
 
 namespace Automations.Systems
 {
-    public readonly partial struct AutomationPlayingSystem : ISystem
+    public partial class AutomationPlayingSystem : ISystem, IDisposable
     {
         private readonly List<Interpolation> interpolationFunctions;
 
@@ -21,17 +21,14 @@ namespace Automations.Systems
             }
         }
 
-        public readonly void Dispose()
+        public void Dispose()
         {
             interpolationFunctions.Dispose();
         }
 
-        void ISystem.Start(in SystemContext context, in World world)
+        void ISystem.Update(Simulator simulator, double deltaTime)
         {
-        }
-
-        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
-        {
+            World world = simulator.world;
             int componentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
@@ -45,7 +42,7 @@ namespace Automations.Systems
                         if (player.automationReference != default)
                         {
                             uint entity = entities[i];
-                            player.time += delta;
+                            player.time += deltaTime;
                             uint automationEntity = world.GetReference(entity, player.automationReference);
                             Evaluate(world, entity, player, automationEntity);
                         }
@@ -54,20 +51,16 @@ namespace Automations.Systems
             }
         }
 
-        void ISystem.Finish(in SystemContext context, in World world)
-        {
-        }
-
-        public readonly InterpolationMethod AddInterpolation(Interpolation interpolation)
+        public InterpolationMethod AddInterpolation(Interpolation interpolation)
         {
             interpolationFunctions.Add(interpolation);
             return new((byte)interpolationFunctions.Count);
         }
 
-        private readonly void Evaluate(World world, uint playerEntity, IsAutomationPlayer player, uint automationEntity)
+        private void Evaluate(World world, uint playerEntity, IsAutomationPlayer player, uint automationEntity)
         {
             DataType dataType = player.target.targetType;
-            TimeSpan time = player.time;
+            float time = (float)player.time;
             ThrowIfDataTypeKindNotSupported(dataType.kind);
 
             ushort dataTypeSize = dataType.size;
@@ -81,17 +74,16 @@ namespace Automations.Systems
             }
 
             ushort keyframeSize = keyframeType.size;
-            float timeInSeconds = (float)time.TotalSeconds;
             float finalKeyframeTime = keyframeTimes[keyframeValues.Length - 1];
-            if (timeInSeconds >= finalKeyframeTime)
+            if (time >= finalKeyframeTime)
             {
                 if (automationComponent.loop)
                 {
-                    timeInSeconds %= finalKeyframeTime;
+                    time %= finalKeyframeTime;
                 }
                 else
                 {
-                    timeInSeconds = finalKeyframeTime;
+                    time = finalKeyframeTime;
                 }
             }
 
@@ -99,7 +91,7 @@ namespace Automations.Systems
             for (int i = 0; i < keyframeValues.Length; i++)
             {
                 float keyframeTime = keyframeTimes[i];
-                if (timeInSeconds >= keyframeTime)
+                if (time >= keyframeTime)
                 {
                     current = i;
                 }
@@ -124,7 +116,7 @@ namespace Automations.Systems
             float currentKeyframeTime = keyframeTimes[current];
             float nextKeyframeTime = keyframeTimes[next];
             float timeDelta = nextKeyframeTime - currentKeyframeTime;
-            float timeProgress = (timeInSeconds - currentKeyframeTime) / timeDelta;
+            float timeProgress = (time - currentKeyframeTime) / timeDelta;
             if (float.IsNaN(timeProgress))
             {
                 timeProgress = 0f;

@@ -8,9 +8,9 @@ namespace Automations.Systems.Tests
         [Test]
         public void AddingSystems()
         {
-            Assert.That(simulator.ContainsSystem<StateMachineSystem>(), Is.True);
-            Assert.That(simulator.ContainsSystem<StateAutomationSystem>(), Is.True);
-            Assert.That(simulator.ContainsSystem<AutomationPlayingSystem>(), Is.True);
+            Assert.That(simulator.Contains<StateMachineSystem>(), Is.True);
+            Assert.That(simulator.Contains<StateAutomationSystem>(), Is.True);
+            Assert.That(simulator.Contains<AutomationPlayingSystem>(), Is.True);
         }
 
 #if DEBUG
@@ -40,13 +40,13 @@ namespace Automations.Systems.Tests
             stateful.StateMachine = machine;
             stateful.AddParameter("pastrami", 0f);
 
-            simulator.Update(TimeSpan.FromSeconds(1f));
+            Update(1);
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Entry State"));
 
             stateful.SetParameter("pastrami", 0.05f);
 
-            simulator.Update(TimeSpan.FromSeconds(1f));
+            Update(1);
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Other State"));
         }
@@ -75,30 +75,30 @@ namespace Automations.Systems.Tests
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Entry State"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
+            Update(0.1);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0f).Within(0.01f));
 
             stateful.SetParameter("pastrami", 1f);
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0.5f).Within(0.01f));
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(1f).Within(0.01f));
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0.5f).Within(0.01f));
 
             stateful.SetParameter("pastrami", 0f);
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0f).Within(0.01f));
         }

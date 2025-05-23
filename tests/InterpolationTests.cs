@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Unmanaged;
 using Worlds;
 
@@ -25,31 +24,31 @@ namespace Automations.Systems.Tests
 
             Assert.That(animation.Count, Is.EqualTo(4));
 
-            simulator.Update(TimeSpan.FromSeconds(0f));
+            Update(0);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("is"));
 
-            simulator.Update(TimeSpan.FromSeconds(1f));
+            Update(1);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.1f));
+            Update(0.1);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.9f));
+            Update(0.9);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
 
-            simulator.Update(TimeSpan.FromSeconds(0.5f));
+            Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
         }

@@ -5,18 +5,11 @@ using Worlds;
 
 namespace Automations.Systems
 {
-    public readonly partial struct StateMachineSystem : ISystem
+    public class StateMachineSystem : ISystem
     {
-        readonly void IDisposable.Dispose()
+        void ISystem.Update(Simulator simulator, double deltaTime)
         {
-        }
-
-        void ISystem.Start(in SystemContext context, in World world)
-        {
-        }
-
-        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
-        {
+            World world = simulator.world;
             int statefulComponentType = world.Schema.GetComponentType<IsStateful>();
             foreach (Chunk chunk in world.Chunks)
             {
@@ -69,10 +62,6 @@ namespace Automations.Systems
                     }
                 }
             }
-        }
-
-        void ISystem.Finish(in SystemContext context, in World world)
-        {
         }
 
         private static bool IsConditionMet(Transition transition, Span<Parameter> parameters)
