@@ -23,16 +23,16 @@ namespace Automations.Systems.Tests
         protected override void SetUp()
         {
             base.SetUp();
-            simulator.Add(new StateMachineSystem());
-            simulator.Add(new StateAutomationSystem());
-            simulator.Add(new AutomationPlayingSystem());
+            Simulator.Add(new StateMachineSystem());
+            Simulator.Add(new StateAutomationSystem());
+            Simulator.Add(new AutomationPlayingSystem());
         }
 
         protected override void TearDown()
         {
-            simulator.Remove<AutomationPlayingSystem>();
-            simulator.Remove<StateAutomationSystem>();
-            simulator.Remove<StateMachineSystem>();
+            Simulator.Remove<AutomationPlayingSystem>();
+            Simulator.Remove<StateAutomationSystem>();
+            Simulator.Remove<StateMachineSystem>();
             base.TearDown();
         }
     }

@@ -24,31 +24,31 @@ namespace Automations.Systems.Tests
 
             Assert.That(animation.Count, Is.EqualTo(4));
 
-            Update(0);
+            Simulator.Update(0);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
-            Update(0.5);
+            Simulator.Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("this"));
 
-            Update(0.5);
+            Simulator.Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("is"));
 
-            Update(1);
+            Simulator.Update(1);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
-            Update(0.1);
+            Simulator.Update(0.1);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("sum"));
 
-            Update(0.9);
+            Simulator.Update(0.9);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
 
-            Update(0.5);
+            Simulator.Update(0.5);
 
             Assert.That(entity.GetComponent<ASCIIText256>().ToString(), Is.EqualTo("text"));
         }
