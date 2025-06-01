@@ -1,22 +1,43 @@
 ﻿using Automations.Components;
+using Automations.Messages;
 using Simulation;
 using System;
 using Worlds;
 
 namespace Automations.Systems
 {
-    public class StateMachineSystem : ISystem
+    public partial class StateMachineSystem : SystemBase, IListener<AutomationUpdate>
     {
-        void ISystem.Update(Simulator simulator, double deltaTime)
+        private readonly World world;
+        private readonly int statefulType;
+        private readonly int stateMachineType;
+        private readonly int parameterArrayType;
+        private readonly int transitionArrayType;
+        private readonly int availableStatesArrayType;
+
+        public StateMachineSystem(Simulator simulator, World world) : base(simulator)
         {
-            World world = simulator.world;
-            int statefulComponentType = world.Schema.GetComponentType<IsStateful>();
+            this.world = world;
+            Schema schema = world.Schema;
+            statefulType = schema.GetComponentType<IsStateful>();
+            stateMachineType = schema.GetComponentType<IsStateMachine>();
+            parameterArrayType = schema.GetArrayType<Parameter>();
+            transitionArrayType = schema.GetArrayType<Transition>();
+            availableStatesArrayType = schema.GetArrayType<AvailableState>();
+        }
+
+        public override void Dispose()
+        {
+        }
+
+        void IListener<AutomationUpdate>.Receive(ref AutomationUpdate message)
+        {
             foreach (Chunk chunk in world.Chunks)
             {
-                if (chunk.Definition.ContainsComponent(statefulComponentType))
+                if (chunk.Definition.ContainsComponent(statefulType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    ComponentEnumerator<IsStateful> components = chunk.GetComponents<IsStateful>(statefulComponentType);
+                    ComponentEnumerator<IsStateful> components = chunk.GetComponents<IsStateful>(statefulType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful stateful = ref components[i];
@@ -26,12 +47,12 @@ namespace Automations.Systems
                             throw new InvalidOperationException($"Stateful entity `{statefulEntity}` does not have a state machine reference");
                         }
 
-                        Values<Parameter> parameters = world.GetArray<Parameter>(statefulEntity);
+                        Values<Parameter> parameters = world.GetArray<Parameter>(statefulEntity, parameterArrayType);
                         uint stateMachineEntity = world.GetReference(statefulEntity, stateful.stateMachineReference);
-                        Values<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity);
+                        Values<AvailableState> availableStates = world.GetArray<AvailableState>(stateMachineEntity, availableStatesArrayType);
                         if (stateful.state == default)
                         {
-                            stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity).entryState;
+                            stateful.state = world.GetComponent<IsStateMachine>(stateMachineEntity, stateMachineType).entryState;
                             if (stateful.state == default)
                             {
                                 throw new InvalidOperationException($"State machine `{stateMachineEntity}` does not have an entry state assigned");
@@ -40,7 +61,7 @@ namespace Automations.Systems
 
                         AvailableState currentState = availableStates[stateful.state - 1];
                         int currentStateHash = currentState.name.GetHashCode();
-                        Values<Transition> transitions = world.GetArray<Transition>(stateMachineEntity);
+                        Values<Transition> transitions = world.GetArray<Transition>(stateMachineEntity, transitionArrayType);
                         foreach (Transition transition in transitions)
                         {
                             if (transition.sourceStateHash == currentStateHash)

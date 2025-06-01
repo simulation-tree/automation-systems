@@ -53,7 +53,7 @@ namespace Automations.Systems.Tests
             double time = 0;
             while (time < 5)
             {
-                Simulator.Update(delta);
+                Update(delta);
                 time += delta;
                 Vector3 currentPosition = thingToMove.GetComponent<Position>().value;
                 if (time == 0.5)
@@ -140,7 +140,7 @@ namespace Automations.Systems.Tests
             double time = 0;
             while (time < 5)
             {
-                Simulator.Update(delta);
+                Update(delta);
                 time += delta;
 
                 Vector3 currentPosition = array[index].value;
@@ -228,7 +228,7 @@ namespace Automations.Systems.Tests
             double time = 0;
             while (time < 5)
             {
-                Simulator.Update(delta);
+                Update(delta);
                 time += delta;
 
                 SomeProperty arrayElement = array[index];

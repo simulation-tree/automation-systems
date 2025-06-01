@@ -1,4 +1,5 @@
-﻿using Simulation.Tests;
+﻿using Automations.Messages;
+using Simulation.Tests;
 using Types;
 using Worlds;
 
@@ -6,26 +7,24 @@ namespace Automations.Systems.Tests
 {
     public abstract class AutomationSystemTests : SimulationTests
     {
+        public World world;
+
         static AutomationSystemTests()
         {
             MetadataRegistry.Load<AutomationsMetadataBank>();
             MetadataRegistry.Load<AutomationsSystemsTestsMetadataBank>();
         }
 
-        protected override Schema CreateSchema()
-        {
-            Schema schema = base.CreateSchema();
-            schema.Load<AutomationsSchemaBank>();
-            schema.Load<AutomationsSystemsTestsSchemaBank>();
-            return schema;
-        }
-
         protected override void SetUp()
         {
             base.SetUp();
-            Simulator.Add(new StateMachineSystem());
-            Simulator.Add(new StateAutomationSystem());
-            Simulator.Add(new AutomationPlayingSystem());
+            Schema schema = new();
+            schema.Load<AutomationsSchemaBank>();
+            schema.Load<AutomationsSystemsTestsSchemaBank>();
+            world = new(schema);
+            Simulator.Add(new StateMachineSystem(Simulator, world));
+            Simulator.Add(new StateAutomationSystem(Simulator, world));
+            Simulator.Add(new AutomationPlayingSystem(Simulator, world));
         }
 
         protected override void TearDown()
@@ -33,7 +32,13 @@ namespace Automations.Systems.Tests
             Simulator.Remove<AutomationPlayingSystem>();
             Simulator.Remove<StateAutomationSystem>();
             Simulator.Remove<StateMachineSystem>();
+            world.Dispose();
             base.TearDown();
+        }
+
+        protected override void Update(double deltaTime)
+        {
+            Simulator.Broadcast(new AutomationUpdate(deltaTime));
         }
     }
 }

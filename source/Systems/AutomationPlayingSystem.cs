@@ -1,4 +1,5 @@
 ﻿using Automations.Components;
+using Automations.Messages;
 using Collections.Generic;
 using Simulation;
 using System;
@@ -8,41 +9,46 @@ using Worlds;
 
 namespace Automations.Systems
 {
-    public partial class AutomationPlayingSystem : ISystem, IDisposable
+    public partial class AutomationPlayingSystem : SystemBase, IListener<AutomationUpdate>
     {
+        private readonly World world;
         private readonly List<Interpolation> interpolationFunctions;
+        private readonly int automationPlayerType;
+        private readonly int automationType;
+        private readonly int keyframeTimeArrayType;
 
-        public AutomationPlayingSystem()
+        public AutomationPlayingSystem(Simulator simulator, World world) : base(simulator)
         {
+            this.world = world;
             interpolationFunctions = new(4);
-            foreach (Interpolation interpolation in BuiltInInterpolations.all)
-            {
-                interpolationFunctions.Add(interpolation);
-            }
+            AddBuiltInInterpolations();
+
+            Schema schema = world.Schema;
+            automationPlayerType = schema.GetComponentType<IsAutomationPlayer>();
+            automationType = schema.GetComponentType<IsAutomation>();
+            keyframeTimeArrayType = schema.GetArrayType<KeyframeTime>();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             interpolationFunctions.Dispose();
         }
 
-        void ISystem.Update(Simulator simulator, double deltaTime)
+        void IListener<AutomationUpdate>.Receive(ref AutomationUpdate message)
         {
-            World world = simulator.world;
-            int componentType = world.Schema.GetComponentType<IsAutomationPlayer>();
             foreach (Chunk chunk in world.Chunks)
             {
-                if (chunk.Definition.ContainsComponent(componentType))
+                if (chunk.Definition.ContainsComponent(automationPlayerType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    ComponentEnumerator<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(componentType);
+                    ComponentEnumerator<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(automationPlayerType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsAutomationPlayer player = ref components[i];
                         if (player.automationReference != default)
                         {
                             uint entity = entities[i];
-                            player.time += deltaTime;
+                            player.time += message.deltaTime;
                             uint automationEntity = world.GetReference(entity, player.automationReference);
                             Evaluate(world, entity, player, automationEntity);
                         }
@@ -57,6 +63,14 @@ namespace Automations.Systems
             return new((byte)interpolationFunctions.Count);
         }
 
+        private void AddBuiltInInterpolations()
+        {
+            foreach (Interpolation interpolation in BuiltInInterpolations.all)
+            {
+                interpolationFunctions.Add(interpolation);
+            }
+        }
+
         private void Evaluate(World world, uint playerEntity, IsAutomationPlayer player, uint automationEntity)
         {
             DataType dataType = player.target.targetType;
@@ -64,10 +78,10 @@ namespace Automations.Systems
             ThrowIfDataTypeKindNotSupported(dataType.kind);
 
             ushort dataTypeSize = dataType.size;
-            IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity);
+            IsAutomation automationComponent = world.GetComponent<IsAutomation>(automationEntity, automationType);
             DataType keyframeType = automationComponent.keyframeType;
             Values keyframeValues = world.GetArray(automationEntity, keyframeType.index);
-            Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity).AsSpan<float>();
+            Span<float> keyframeTimes = world.GetArray<KeyframeTime>(automationEntity, keyframeTimeArrayType).AsSpan<float>();
             if (keyframeValues.Length == 0)
             {
                 return;

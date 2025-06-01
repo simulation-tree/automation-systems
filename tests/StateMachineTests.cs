@@ -32,13 +32,13 @@ namespace Automations.Systems.Tests
             stateful.StateMachine = machine;
             stateful.AddParameter("pastrami", 0f);
 
-            Simulator.Update(1);
+            Update(1);
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Entry State"));
 
             stateful.SetParameter("pastrami", 0.05f);
 
-            Simulator.Update(1);
+            Update(1);
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Other State"));
         }
@@ -67,30 +67,30 @@ namespace Automations.Systems.Tests
 
             Assert.That(stateful.CurrentState.ToString(), Is.EqualTo("Entry State"));
 
-            Simulator.Update(0.1);
+            Update(0.1);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0f).Within(0.01f));
 
             stateful.SetParameter("pastrami", 1f);
-            Simulator.Update(0.1);
-            Simulator.Update(0.1);
-            Simulator.Update(0.1);
-            Simulator.Update(0.1);
-            Simulator.Update(0.1);
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
+            Update(0.1);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0.5f).Within(0.01f));
 
-            Simulator.Update(0.5);
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(1f).Within(0.01f));
 
-            Simulator.Update(0.5);
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0.5f).Within(0.01f));
 
             stateful.SetParameter("pastrami", 0f);
 
-            Simulator.Update(0.5);
+            Update(0.5);
 
             Assert.That(entity.GetComponent<float>(), Is.EqualTo(0f).Within(0.01f));
         }

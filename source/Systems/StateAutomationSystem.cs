@@ -1,25 +1,39 @@
 ﻿using Automations.Components;
+using Automations.Messages;
 using Simulation;
 using System;
 using Worlds;
 
 namespace Automations.Systems
 {
-    public class StateAutomationSystem : ISystem
+    public partial class StateAutomationSystem : SystemBase, IListener<AutomationUpdate>
     {
-        void ISystem.Update(Simulator simulator, double deltaTime)
+        private readonly World world;
+        private readonly int statefulType;
+        private readonly int automationType;
+
+        public StateAutomationSystem(Simulator simulator, World world) : base(simulator)
         {
-            World world = simulator.world;
-            int statefulComponentType = world.Schema.GetComponentType<IsStateful>();
-            int automationComponentType = world.Schema.GetComponentType<IsAutomationPlayer>();
+            this.world = world;
+            Schema schema = world.Schema;
+            statefulType = schema.GetComponentType<IsStateful>();
+            automationType = schema.GetComponentType<IsAutomationPlayer>();
+        }
+
+        public override void Dispose()
+        {
+        }
+
+        void IListener<AutomationUpdate>.Receive(ref AutomationUpdate message)
+        {
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
-                if (definition.ContainsComponent(statefulComponentType) && definition.ContainsComponent(automationComponentType))
+                if (definition.ContainsComponent(statefulType) && definition.ContainsComponent(automationType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
-                    ComponentEnumerator<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulComponentType);
-                    ComponentEnumerator<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationComponentType);
+                    ComponentEnumerator<IsStateful> statefulComponents = chunk.GetComponents<IsStateful>(statefulType);
+                    ComponentEnumerator<IsAutomationPlayer> automationComponents = chunk.GetComponents<IsAutomationPlayer>(automationType);
                     for (int i = 0; i < entities.Length; i++)
                     {
                         ref IsStateful statefulComponent = ref statefulComponents[i];
