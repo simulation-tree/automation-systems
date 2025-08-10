@@ -3,7 +3,7 @@
 
     <ItemGroup>
         <Reference Include="Automation.Systems">
-            <HintPath>$(MSBuildThisFileDirectory)..\lib\net9.0\$(Configuration)\Automation.Systems.dll</HintPath>
+            <HintPath>$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\$(Configuration)\Automation.Systems.dll</HintPath>
         </Reference>
     </ItemGroup>
 
