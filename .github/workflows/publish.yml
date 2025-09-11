@@ -15,19 +15,19 @@ jobs:
         with:
           path: ${{ github.event.repository.name }}
             
-      - name: Checkout `simulation`
-        uses: actions/checkout@v4.1.2
-        with:
-          repository: simulation-tree/simulation
-          token: ${{ secrets.PAT }}
-          path: simulation
-      
       - name: Checkout `automations`
         uses: actions/checkout@v4.1.2
         with:
           repository: simulation-tree/automations
           token: ${{ secrets.PAT }}
           path: automations
+      
+      - name: Checkout `simulation`
+        uses: actions/checkout@v4.1.2
+        with:
+          repository: simulation-tree/simulation
+          token: ${{ secrets.PAT }}
+          path: simulation
       
       - name: Checkout `unmanaged`
         uses: actions/checkout@v4.1.2
@@ -60,9 +60,7 @@ jobs:
       - name: Setup
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            9.0.x
-            10.0.x
+          dotnet-version: 9.0.x
 
       - name: Set VERSION variable from tag
         run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
@@ -80,7 +78,7 @@ jobs:
         run: dotnet build "${{ github.event.repository.name }}/tests" -c Release /p:Version=${VERSION}
             
       - name: Test
-        run: dotnet test "${{ github.event.repository.name }}/tests" -c Release --logger "trx" --framework net10.0
+        run: dotnet test "${{ github.event.repository.name }}/tests" -c Release --logger "trx"
             
       - name: Pack `Automation.Systems`
         run: dotnet pack "${{ github.event.repository.name }}/source" /p:Version=${VERSION} --no-build --output .
