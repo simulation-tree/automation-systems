@@ -36,9 +36,11 @@ namespace Automations.Systems
 
         void IListener<AutomationUpdate>.Receive(ref AutomationUpdate message)
         {
-            foreach (Chunk chunk in world.Chunks)
+            ReadOnlySpan<Chunk> chunks = world.Chunks;
+            for (int c = 0; c < chunks.Length; c++)
             {
-                if (chunk.Definition.ContainsComponent(automationPlayerType))
+                Chunk chunk = chunks[c];
+                if (chunk.componentTypes.Contains(automationPlayerType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
                     ComponentEnumerator<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(automationPlayerType);
