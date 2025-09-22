@@ -36,7 +36,7 @@ namespace Automations.Systems
             for (int c = 0; c < chunks.Length; c++)
             {
                 Chunk chunk = chunks[c];
-                if (chunk.componentTypes.Contains(statefulType))
+                if (chunk.ComponentTypes.Contains(statefulType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
                     ComponentEnumerator<IsStateful> components = chunk.GetComponents<IsStateful>(statefulType);

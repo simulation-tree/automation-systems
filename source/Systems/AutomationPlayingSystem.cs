@@ -40,7 +40,7 @@ namespace Automations.Systems
             for (int c = 0; c < chunks.Length; c++)
             {
                 Chunk chunk = chunks[c];
-                if (chunk.componentTypes.Contains(automationPlayerType))
+                if (chunk.ComponentTypes.Contains(automationPlayerType))
                 {
                     ReadOnlySpan<uint> entities = chunk.Entities;
                     ComponentEnumerator<IsAutomationPlayer> components = chunk.GetComponents<IsAutomationPlayer>(automationPlayerType);
